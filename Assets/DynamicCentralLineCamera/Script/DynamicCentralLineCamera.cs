@@ -48,8 +48,12 @@ namespace DynamicCentralLineCamera
             if (CachePosition == transform.position) return;
             var direction = transform.TransformDirection(CachePosition).normalized;
             target.transform.position = direction;
-
             CachePosition = transform.position;
+        }
+        
+        void OnRenderImage(RenderTexture src, RenderTexture dest) 
+        {
+            Graphics.Blit(src, dest, material);
         }
     }
 }

@@ -81,9 +81,10 @@
                 float2 polarCoordinates = float2(length(i.uv - float2(_CenterX, _CenterY)) * 2 * _Central, atan2(i.uv.x - _CenterX, i.uv.y - _CenterY) * 1.0/6.28 * _Line);
                 float step = smoothstep(_CentralEdge, 0.86, (gradientNoise(polarCoordinates.y) + 0.5) + ((polarCoordinates.x - 0.1) * 0.9 / (_CentralLength - 0.1) * -1));
                 if(step != 0) {
-                    discard;
+                    c.a = 0;
+                } else {
+                    c.rgb = step;
                 }
-                c.rgb = step;
                 return c;
             }
             ENDCG

@@ -1,55 +1,55 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Serialization;
+﻿using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace DynamicCentralLineCamera
 {
     class DynamicCentralLineCamera : MonoBehaviour
     {
-
+        
         [SerializeField] private Material material;
-        [SerializeField] private bool dummy = false;
-
-        private GameObject dummyCube;
+        [SerializeField] private Camera camera = null;
+        [SerializeField] private GameObject target;
+        
         private Vector3 CachePosition = Vector3.zero;
+
+        private static readonly float EDGE_MAX = 0.35f;
+        
         private static readonly int CenterX = Shader.PropertyToID("_CenterX");
         private static readonly int CenterY = Shader.PropertyToID("_CenterY");
         private static readonly int CentralEdge = Shader.PropertyToID("_CentralEdge");
+        private static readonly int CentralLength = Shader.PropertyToID("_CentralLength");
+        private static readonly int Central = Shader.PropertyToID("_Central");
 
         // Start is called before the first frame update
         void Start()
         {
-            if (!dummy) return;
-            dummyCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            dummyCube.transform.position = transform.position + Vector3.forward * 10f;
+            camera = camera ? camera : Camera.main;
+            
+            Assert.IsNotNull(target);
         }
 
         // Update is called once per frame
         void Update()
         {
-            if (!dummy) return;
-            var position = dummyCube.transform.position;
-            var screenPos = Camera.main.WorldToScreenPoint(position);
+            var position = target.transform.position;
+            var screenPos = camera.WorldToScreenPoint(position);
             material.SetFloat(CenterX, screenPos.x / Screen.width);
             material.SetFloat(CenterY, screenPos.y / Screen.height);
-            var camPos = Camera.main.transform.position;
+            
+            var camPos = camera.transform.position;
             var distance = Vector3.Distance(position, camPos) / 10f;
-            material.SetFloat(CentralEdge, Mathf.Clamp(distance, 0f, 0.5f));
-            Debug.Log(Vector3.Distance(position, camPos));
+            var edge = EDGE_MAX * (1f - Mathf.Clamp(distance / 10f, 0f, EDGE_MAX) / EDGE_MAX);
+            material.SetFloat(CentralEdge, edge);
+            material.SetFloat(CentralLength, edge + distance / 10f);
+
+            var noise = Random.Range(0.195f, 0.2f);
+            material.SetFloat(Central, noise + distance / 100f);
             
             if (CachePosition == transform.position) return;
             var direction = transform.TransformDirection(CachePosition).normalized;
-            dummyCube.transform.position = direction;
-            Debug.Log(transform.TransformDirection(CachePosition).normalized);
+            target.transform.position = direction;
 
             CachePosition = transform.position;
-        }
-        
-        void OnRenderImage(RenderTexture src, RenderTexture dest)
-        {
-//            Graphics.Blit(src, dest, material);
         }
     }
 }

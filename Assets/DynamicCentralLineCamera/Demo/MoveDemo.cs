@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace DynamicCentralLineCamera.Sample
+namespace DynamicCentralLineCamera.Demo
 {
-    public class MoveSample : MonoBehaviour
+    public class MoveDemo : MonoBehaviour
     {
         
         [SerializeField] private float speed = 5f;

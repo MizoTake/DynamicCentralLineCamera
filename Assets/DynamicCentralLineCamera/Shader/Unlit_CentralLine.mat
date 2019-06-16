@@ -24,13 +24,13 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _CenterX: 0.5113596
-    - _CenterY: 0.45328978
-    - _Central: 0.22642545
-    - _CentralEdge: 0.044986725
+    - _CenterX: 0.5111946
+    - _CenterY: 0.49447462
+    - _Central: 0.24485336
+    - _CentralEdge: 0
     - _CentralEdge1: 1.22
     - _CentralEdge2: 2.07
-    - _CentralLength: 0.35
+    - _CentralLength: 0.46091804
     - _CentralNoise: 37.832054
     - _CentralStep: 0.4
     - _Line: 5.05

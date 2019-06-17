@@ -51,7 +51,7 @@ namespace DynamicCentralLineCamera
 
             var noise = Random.Range(0.195f, 0.2f);
             var central = noise + distance / 100f;
-
+            
             if (!targetRenderer.isVisible)
             {
                 if(delta < 1f) delta += Time.deltaTime;

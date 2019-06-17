@@ -10,7 +10,9 @@ namespace DynamicCentralLineCamera
         [SerializeField] private Camera camera = null;
         [SerializeField] private GameObject target;
         
-        private Vector3 CachePosition = Vector3.zero;
+        private Vector3 cachePosition = Vector3.zero;
+        private Renderer targetRenderer;
+        private float delta;
 
         private static readonly float EDGE_MAX = 0.35f;
         
@@ -23,6 +25,11 @@ namespace DynamicCentralLineCamera
         // Start is called before the first frame update
         void Start()
         {
+            targetRenderer = target.GetComponent<Renderer>();
+            if (!targetRenderer)
+            {
+                targetRenderer = target.GetComponentInChildren<Renderer>();
+            }
             camera = camera ? camera : Camera.main;
             
             Assert.IsNotNull(target);
@@ -43,12 +50,31 @@ namespace DynamicCentralLineCamera
             material.SetFloat(CentralLength, edge + distance / 10f);
 
             var noise = Random.Range(0.195f, 0.2f);
-            material.SetFloat(Central, noise + distance / 100f);
+            var central = noise + distance / 100f;
+
+            if (!targetRenderer.isVisible)
+            {
+                if(delta < 1f) delta += Time.deltaTime;
+                material.SetFloat(Central, Mathf.Lerp(central, 0, delta * 2f));
+            }
+            else
+            {
+                if (delta < 0)
+                {
+                    material.SetFloat(Central, central);
+                    delta = 0;
+                }
+                else
+                {
+                    delta -= Time.deltaTime;
+                    material.SetFloat(Central, Mathf.Lerp(central, 0, delta * 2f));
+                }
+            }
             
-            if (CachePosition == transform.position) return;
-            var direction = transform.TransformDirection(CachePosition).normalized;
+            if (cachePosition == transform.position) return;
+            var direction = transform.TransformDirection(cachePosition).normalized;
             target.transform.position = direction;
-            CachePosition = transform.position;
+            cachePosition = transform.position;
         }
         
         void OnRenderImage(RenderTexture src, RenderTexture dest) 
